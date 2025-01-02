@@ -541,6 +541,10 @@ cursor:pointer;
 transform:scale(0.9);
 }
 
+
+<!--Video section css start here-->
+
+
 .container, .video-controls, .video-timer, .options{
   display: flex;
   align-items: center;
@@ -555,7 +559,6 @@ height:231px;
   max-width: 1366px;
   border-radius: 5px;
   position: relative;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 margin-left: 4px;
 }
 
@@ -566,13 +569,6 @@ margin-left: 4px;
   object-fit: cover;
   transition: all 0.3s;
 }
-
-.container video:hover{
-  width: 100%;
-position: relative;
-}
-
-
 
 .controls{
 width:292px;
@@ -675,9 +671,11 @@ height:10px;
 margin:0 1px;
 cursor:pointer;
 }
+
+
 .play-pause-overlay {
   position: absolute;
-  top: 15px;
+  top: 13px;
   left: 0;
   width: 292px;
   height: 164.25px;
@@ -736,12 +734,9 @@ display:none;
 
 
 
-
-
-
 .videoSection{
-position: absolute;
-  top: 15px;
+position:absolute;
+top:13px;
 }
 
 .fullscreen {
@@ -768,9 +763,7 @@ transition: display 0.3s ease;
   transition: transform 0.2s;
 }
 
-.fullscreen-icon:hover {
-  transform: scale(1.1);
-}
+
 
 .fullscreen video {
   width: 100%; 

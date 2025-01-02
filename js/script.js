@@ -11,7 +11,8 @@ volumeBars = document.querySelectorAll(".vol"),
 playPauseOverlay = container.querySelector(".play-pause-overlay"),
 fullscreenBtn = container.querySelector(".fullscreen"),
 controls = container.querySelector(".controls"),
-videoSection = container.querySelector(".videoSection");
+videoSection = container.querySelector(".videoSection"),
+fullScreenIcon = document.querySelector(".fullscreen i");
 
 
 // Format time as MM:SS 
@@ -200,6 +201,8 @@ const toggleFullscreen = () => {
 controls.style.height = "39px";
 controls.style.bottom = "0px";
 videoSection.style.top = "22px";
+fullScreenIcon.classList.replace("fa-expand", "fa-compress"); 
+fullScreenIcon.title="Exit full screen (f)";
     }).catch(err => {
       console.error(`Error attempting to enable fullscreen: ${err.message}`);
     });
@@ -214,6 +217,8 @@ controls.style.width = "100%";
 controls.style.height = "39px";
 controls.style.bottom = "13px";
 videoSection.style.top = "13px";
+fullScreenIcon.classList.replace( "fa-compress", "fa-expand");
+fullScreenIcon.title="Full screen (f)";
     });
   }
 };
