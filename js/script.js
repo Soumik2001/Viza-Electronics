@@ -8,14 +8,13 @@ playPauseBtn = container.querySelector(".play-pause"),
 speedBtn= container.querySelector(".playback-speed span"),
 toggleButton = container.querySelector(".toggle-button"),
 volumeBars = document.querySelectorAll(".vol"),
-playPauseOverlay = container.querySelector(".play-pause-overlay");
-
-
-
+playPauseOverlay = container.querySelector(".play-pause-overlay"),
+fullscreenBtn = container.querySelector(".fullscreen"),
+controls = container.querySelector(".controls"),
+videoSection = container.querySelector(".videoSection");
 
 
 // Format time as MM:SS 
-
 const formatTime = (time) => {
   let seconds = Math.floor(time % 60),
     minutes = Math.floor(time / 60);
@@ -25,44 +24,55 @@ const formatTime = (time) => {
 };
 
 
-mainVideo.addEventListener("loadedmetadata", () => {
-  videoDuration.textContent = formatTime(mainVideo.duration);
+const handleMetadataLoaded = () => {
+  if (!isNaN(mainVideo.duration)) {
+    videoDuration.textContent = formatTime(mainVideo.duration);
+  } else {
+    videoDuration.textContent = "00:00"; 
+  }
+};
+
+
+if (mainVideo.readyState >= 1) {
+  handleMetadataLoaded(); 
+} else {
+  mainVideo.addEventListener("loadedmetadata", handleMetadataLoaded);
+}
+
+
+mainVideo.addEventListener('timeupdate', () => {
+  const percent = (mainVideo.currentTime / mainVideo.duration) * 100;
+  progressBar.style.width = `${percent}%`;
+  currentVidTime.textContent = formatTime(mainVideo.currentTime);
 });
 
-mainVideo.addEventListener('timeupdate',()=>{
-const percent = (mainVideo.currentTime / mainVideo.duration) *100;
-progressBar.style.width = `${percent}%`;
-currentVidTime.textContent = formatTime(mainVideo.currentTime);
-});
 
 videoTimeline.addEventListener("click", (e) => {
   const timelineWidth = videoTimeline.clientWidth;
   mainVideo.currentTime = (e.offsetX / timelineWidth) * mainVideo.duration;
 });
 
+// Draggable progress bar logic
 
-const draggableProgressBar = (e)=>{
-const timelineWidth = videoTimeline.clientWidth;
-progressBar.style.width = `${e.offsetX}px`;
-mainVideo.currentTime = (e.offsetX / timelineWidth) * mainVideo.duration;
-currentVidTime.textContent = formatTime(mainVideo.currentTime);
-}
 
+const draggableProgressBar = (e) => {
+  const timelineWidth = videoTimeline.clientWidth;
+  progressBar.style.width = `${e.offsetX}px`;
+  mainVideo.currentTime = (e.offsetX / timelineWidth) * mainVideo.duration;
+  currentVidTime.textContent = formatTime(mainVideo.currentTime);
+};
 
 let isDragging = false;
-videoTimeline.addEventListener("mousedown", ()=>{
-
-isDragging = true;
-videoTimeline.addEventListener('mousemove', draggableProgressBar);
-
+videoTimeline.addEventListener("mousedown", () => {
+  isDragging = true;
+  videoTimeline.addEventListener('mousemove', draggableProgressBar);
 });
 
-
-document.addEventListener('mouseup',()=>{
-if(isDragging){
-isDragging = false;
-videoTimeline.removeEventListener('mousemove', draggableProgressBar);
-}
+document.addEventListener('mouseup', () => {
+  if (isDragging) {
+    isDragging = false;
+    videoTimeline.removeEventListener('mousemove', draggableProgressBar);
+  }
 });
 
 
@@ -90,7 +100,17 @@ playPauseOverlay.classList.remove('show');
 }
 };
 
+mainVideo.addEventListener('ended', () => {
+  toggleButton.src = "images/playbutton.png"; 
+  toggleButton.setAttribute("mode", "pause"); 
+  playPauseOverlay.classList.add('pause'); 
+  playPauseOverlay.classList.add('show'); 
+});
+
+
+
 playPauseBtn.addEventListener('click', togglePlayPause);
+
 
 mainVideo.addEventListener('click', togglePlayPause);
 
@@ -134,21 +154,82 @@ if(stopButton){
 stopButton.addEventListener('click', stopVideo);
 }
 
+// Function to update the volume
+const updateVolume = (level) => {
+  // Update the visual representation of the volume bars
+  volumeBars.forEach((bar, index) => {
+    bar.style.backgroundColor = index < level ? '#21303c' : '#fff';
+  });
 
-const updateVolume = (level)=>{
-volumeBars.forEach((bar,index)=>{
-bar.style.backgroundColor = index< level ? '#21303c' : '#fff';
-});
-mainVideo.volume = level / volumeBars.length;
+  // Set the video volume and save the level in localStorage
+  mainVideo.volume = level / volumeBars.length;
+  localStorage.setItem('savedVolumeLevel', level); // Save the volume level
 };
 
-volumeBars.forEach((bar,index)=>{
-bar.addEventListener('click',()=>{
-updateVolume(index+1);
-});
+// Event listener for clicking on volume bars
+volumeBars.forEach((bar, index) => {
+  bar.addEventListener('click', () => {
+    updateVolume(index + 1); // Update volume based on clicked bar
+  });
 });
 
-updateVolume(Math.floor(volumeBars.length/2));
+// Retrieve saved volume level from localStorage or set default
+const savedVolumeLevel = localStorage.getItem('savedVolumeLevel');
+if (savedVolumeLevel) {
+  updateVolume(parseInt(savedVolumeLevel, 10)); // Set saved volume
+} else {
+  updateVolume(Math.floor(volumeBars.length / 2)); // Default to mid-level
+}
 
+// Play/Pause Overlay
 playPauseOverlay.classList.add("show");
 playPauseOverlay.addEventListener('click', togglePlayPause);
+
+
+
+// Toggle Full screen functionality
+
+const toggleFullscreen = () => {
+  if (!document.fullscreenElement) {
+    container.requestFullscreen().then(() => {
+      mainVideo.style.width = "100vw";
+      mainVideo.style.height = "calc(100vh - 60px)";
+      playPauseOverlay.style.width = "100vw";
+      playPauseOverlay.style.height = "93vh";
+      controls.style.width = "100vw";
+controls.style.height = "39px";
+controls.style.bottom = "0px";
+videoSection.style.top = "22px";
+    }).catch(err => {
+      console.error(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  } else {
+    document.exitFullscreen().then(() => {
+      mainVideo.style.width = "100%";
+      mainVideo.style.height = "100%";
+playPauseOverlay.style.width = "100%";
+      playPauseOverlay.style.height = "164.25px";
+playPauseOverlay.style.top = "13px";
+controls.style.width = "100%";
+controls.style.height = "39px";
+controls.style.bottom = "13px";
+videoSection.style.top = "13px";
+    });
+  }
+};
+
+// Add click event listener to the fullscreen button
+fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+// Keyboard shortcut for fullscreen (F key)
+document.addEventListener("keydown", (e) => {
+  if (e.key === "f" || e.key === "F" || e.keyCode=== 27) {    
+toggleFullscreen();
+  }
+});
+
+
+mainVideo.addEventListener('dblclick', toggleFullscreen);
+
+
+
