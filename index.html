@@ -196,24 +196,25 @@ Sed do eiusmod tempor incididunt ut labore et.
 <!--Latest Vedios Section Start-->
 
 <div class="videos">
-<div class="blogText">Latest Videos</div>
+<div class="blogText" >Latest Videos</div>
 <div class="container show-controls">
 
-<div class="videoSection" >
+<div class="videoSection">
 <video src="videos/video.mp4"></video>
 <div class="fullscreen">
-<i class="fa-solid fa-expand fullscreen-icon" title="Full screen (f)"></i>
+<i class="fa-solid fa-expand fullscreen-icon1" title="Full screen (f)"></i>
   </div>
 </div>
-
 <div class="play-pause-overlay">
-  <button class="play-pause-btn" aria-label="Play">
-    <span class="icon"><img src="images/play.png" alt="Play Icon"></span>
-  </button>
-  <button class="pause-icon" aria-label="Pause">
-    <img src="images/pause.png" alt="Pause Icon" />
+  <div class="fullscreen">
+    <i class="fa-solid fa-expand fullscreen-icon2" title="Full screen (f)"></i>
+  </div>
+  <button class="play-pause-toggle" aria-label="Play">
+    <img src="images/play.png" alt="Play Icon" class="play-pause-icon" />
   </button>
 </div>
+
+
 
 
 <div class="controls">
@@ -253,7 +254,7 @@ Sed do eiusmod tempor incididunt ut labore et.
     </div>
 </div>
 
-<button class="see spc">SHOW ALL</button>
+<button class="see spc" id="videoButton">SHOW ALL</button>
 </div>
 
 </div>
@@ -287,8 +288,8 @@ Sed do eiusmod tempor incididunt ut labore et.
 
 </div>
 
-<script src="js/script.js"></script>
 
+<script src="js/script.js"></script>
 
 </body>
 </html>
