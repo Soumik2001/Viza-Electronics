@@ -577,7 +577,7 @@ position: absolute;
   bottom: 13px;
 display: flex;
   align-items: center;
-  justify-content: space-between;
+justify-content: space-between;
 padding: 0 5px;
 transition: transform 0.3s ease-in-out;
 }
@@ -654,6 +654,7 @@ height:5px;
   background: #264e6f;
   transform: translateY(-50%);
 }
+
 .progress-bar::before, .progress-area span{
   display: none;
 }
@@ -661,6 +662,7 @@ height:5px;
 .video-timeline:hover .progress-area span{
   display: block;
 }
+
 
 
 .video-timer p{
@@ -700,7 +702,7 @@ cursor:pointer;
 
 /* General icon styles */
 .play-pause-overlay button {
-  background-color: rgba(169, 169, 169, 0.3);
+  background-color: transparent;
   border: none;
   padding: 0;
   width: 65px;
@@ -714,7 +716,7 @@ cursor:pointer;
 }
 
 .play-pause-overlay button:hover {
-  background-color: rgba(169, 169, 169, 0.3);
+
   transform: scale(1.1);
 }
 

@@ -17,8 +17,8 @@ const container = document.querySelector(".container"),
 fullScreenIcon2 = document.querySelector(".fullscreen-icon2");
 const playPauseIcon = playPauseOverlay.querySelector(".play-pause-icon");
 const videoBtn = document.getElementById("videoButton");
-
-
+const progressArea = document.querySelector(".progress-area");
+const options2 = document.querySelector(".options2");
 
 // Format time as MM:SS 
 const formatTime = (time) => {
@@ -101,7 +101,7 @@ const togglePlayPause = () => {
     mainVideo.play();
     toggleButton.src = "images/pausebutton.png";
     toggleButton.setAttribute("mode", "play");
-
+playPauseOverlay.querySelector(".play-pause-icon").src = "images/pause.png";
     playPauseOverlay.classList.remove("show"); // Hide overlay when video plays
     overlayVisible = false; // Reset overlay visibility when the video plays
   } else {
@@ -343,8 +343,12 @@ const toggleFullscreen = () => {
 const applyFullscreenStyles = () => {
   mainVideo.style.cssText = "width: 100vw; height: calc(100vh - 60px);";  // Adjust video size
   playPauseOverlay.style.cssText = "width: 100vw; height: calc(100vh - 51px);";
-  controls.style.cssText = "width: 100vw; height: 39px; bottom: 0;";
+  controls.style.cssText = "width: 100vw; height: 39px; bottom: 0; justify-content: space-between;";
   videoSection.style.top = "22px";
+ 
+progressArea.style.cssText = "width: 550px; ";
+options2.style.cssText = "width: 550px;";
+
 
   fullScreenIcon.classList.replace("fa-expand", "fa-compress");
   fullScreenIcon2.classList.replace("fa-expand", "fa-compress");
@@ -363,7 +367,8 @@ const resetStyles = () => {
   playPauseOverlay.style.cssText = "width: 100%; height: 164.25px; top: 13px;";
   controls.style.cssText = "width: 100%; height: 39px; bottom: 13px;";
   videoSection.style.top = "13px";
-
+ progressArea.style.width = "59px"; 
+options2.style.width="62px";
   fullScreenIcon.classList.replace("fa-compress", "fa-expand");
   fullScreenIcon2.classList.replace("fa-compress", "fa-expand");
   fullScreenIcon.title = "Full screen (f)";
