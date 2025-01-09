@@ -2,69 +2,109 @@
 
 Live: https://soumik2001.github.io/Viza-Electronics/
 
+// Function to toggle the thumbnail background
+const setThumbnailBackground = () => {
+  playPauseOverlay.classList.add("thumbnail-background");
+};
 
-// Fullscreen functionality
-let isFullscreen = false;
-let isVideoPaused = true;
-let controlsTimeout;
+const removeThumbnailBackground = () => {
+  playPauseOverlay.classList.remove("thumbnail-background");
+};
 
-// Function to hide controls after 1800ms if video is playing
-const hideControls = () => {
-  if (isFullscreen && !isVideoPaused) {
-    controls.classList.add("hide-controls"); // Add class to hide controls
+
+// Set initial background on page load
+document.addEventListener("DOMContentLoaded", function(e){ 
+e.preventDefault();
+setThumbnailBackground();
+});
+
+
+// Function to update overlay and background based on player state
+const updateOverlayState = () => {
+  const playerState = player.getPlayerState();
+
+  if (playerState === YT.PlayerState.PLAYING) {
+    removeThumbnailBackground();
+    playPauseOverlay.classList.remove("show");
+    toggleButton.src = "images/pausebutton.png";
+    playPauseOverlay.querySelector(".play-pause-icon").src = "images/pause.png";
+    overlayVisible = false;
+  } 
+else {
+    playPauseOverlay.classList.add("show");
+    
+    toggleButton.src = "images/playbutton.png";
+    playPauseOverlay.querySelector(".play-pause-icon").src = "images/play.png";
+    overlayVisible = true;
   }
 };
 
-// Function to show controls and reset hide timeout
-const showControls = () => {
-  clearTimeout(controlsTimeout); // Clear any existing timeout
-  controls.classList.remove("hide-controls"); // Ensure controls are visible
+// Stop video functionality
 
-  // Start the timeout to hide controls only if the video is playing
-  if (isFullscreen && !isVideoPaused) {
-    controlsTimeout = setTimeout(hideControls, 1800);
+const stopVideo = () => {
+  player.stopVideo();
+  progressBar.style.width = "0%";
+  currentVidTime.textContent = formatTime(0);
+  videoDuration.textContent = formatTime(player.getDuration());
+  setThumbnailBackground();
+  
+};
+
+// Toggle play/pause functionality
+
+
+const togglePlayPause = () => {
+  const playerState = player.getPlayerState();
+
+  if (playerState === YT.PlayerState.PLAYING) {
+    // Pause video and show overlay
+    player.pauseVideo();
+    toggleButton.src = "images/playbutton.png";
+    playPauseOverlay.querySelector(".play-pause-icon").src = "images/play.png";
+    playPauseOverlay.classList.add("show");
+
+
+    removeThumbnailBackground();
+    overlayVisible = true;
+  } 
+
+else {
+    // Play video and hide overlay
+    player.playVideo();
+    toggleButton.src = "images/pausebutton.png";
+    playPauseOverlay.querySelector(".play-pause-icon").src = "images/pause.png";
+    playPauseOverlay.classList.remove("show");
+
+
+    removeThumbnailBackground();
+    overlayVisible = false;
   }
 };
 
-// Handle play and pause events to toggle video state and controls visibility
-const handlePlayPause = (state) => {
-  isVideoPaused = state === "pause";
-  showControls(); // Ensure controls are visible when video is paused or playing
+// Handle player state change events
+function onPlayerStateChange(event) {
+  updateOverlayState();
+}
+
+// Show overlay on mouse movement
+const showOverlay = () => {
+  if (overlayVisible) return;
+
+  playPauseOverlay.classList.add("show");
+  overlayVisible = true;
+
+  // Hide overlay after timeout if video is playing
+  clearTimeout(mouseTimeout);
+  if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+    mouseTimeout = setTimeout(() => {
+      playPauseOverlay.classList.remove("show");
+      overlayVisible = false;
+    }, 2500);
+  }
 };
 
-// Show controls when mouse enters the container or controls
-container.addEventListener("mousemove", showControls);
+// Event listeners
+playPauseOverlay.addEventListener("mouseover", showOverlay);
+toggleButton.addEventListener("click", togglePlayPause);
+playPauseBtn.addEventListener("click", togglePlayPause);
 
-controls.addEventListener("mouseenter", () => {
-  clearTimeout(controlsTimeout); // Clear timeout when mouse enters
-  showControls(); // Keep controls visible
-});
-
-// Restart the hide timeout when mouse leaves container or controls
-controls.addEventListener("mouseleave", () => {
-  if (isFullscreen && !isVideoPaused) {
-    controlsTimeout = setTimeout(hideControls, 1800); // Hide after 1800ms if video is playing
-  }
-});
-
-container.addEventListener("mouseleave", () => {
-  if (isFullscreen && !isVideoPaused) {
-    controlsTimeout = setTimeout(hideControls, 1800); // Hide after 1800ms if video is playing
-  }
-});
-
-// Video play/pause events to control the visibility of controls
-youtubeContainer.addEventListener("play", () => handlePlayPause("play"));
-youtubeContainer.addEventListener("pause", () => handlePlayPause("pause"));
-
-// Manage fullscreen state and control styles
-document.addEventListener("fullscreenchange", () => {
-  isFullscreen = !!document.fullscreenElement;
-  if (!isFullscreen) {
-    controls.classList.remove("hide-controls"); // Ensure controls are visible when exiting fullscreen
-    clearTimeout(controlsTimeout); // Stop the hide timeout
-  }
-});
-
-// Ensure controls are visible at the start
-controls.classList.remove("hide-controls");
